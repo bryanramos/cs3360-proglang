@@ -14,8 +14,10 @@
         <input type="submit" value="Send it" />
     </form>
     <?php
-        $file = 'data/notes.txt';
-        $fp = fopen($file, "w") or die(); # create file if it doesn't exist
+        $file = 'notes.txt';
+        if (!file_exists($file)) {
+            $fp = fopen($file, "w") or die(); # create file if it doesn't exist
+        }
         addNote($note);
     ?>
 
