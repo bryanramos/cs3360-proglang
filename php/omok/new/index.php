@@ -21,6 +21,7 @@
     function newGame($strategy) {
         $pid = uniqid();
         $game = new Game($strategy);
+        $game->storeGame($pid, $game);
         toJson(Response::pid($pid));
     }
 

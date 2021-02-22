@@ -1,6 +1,6 @@
 <?php
 
-    # handle responses returned to the user my the Omok web service
+    # handle responses returned to the user by the Omok web service
     class Response {
         public $response;
 
