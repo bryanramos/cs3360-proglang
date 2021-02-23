@@ -71,9 +71,9 @@
         } else {
 
             if ($game->strategy === "Random") {
-                $move = RandomStrategy::getMove($game->board);
+                $move = RandomStrategy::pickSlot($game->board);
             } else {
-                $move = SmartStrategy::getMove(false, $game->board, $move);
+                $move = SmartStrategy::pickSlot(false, $game->board, $move);
             }
 
             $current_move = $game->completeMove(false, $move);
