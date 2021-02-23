@@ -25,6 +25,13 @@
             $instance->acknowledgeMove = $acknowledgeMove;
             return $instance;
         }
+
+        static function moves($acknowledgeMove, $move) {
+            $instance = new self(true);
+            $instance->acknowledgeMove = $acknowledgeMove;
+            $instance->move = $move;
+            return $instance;
+        }
     }
 
 ?>

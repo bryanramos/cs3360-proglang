@@ -9,47 +9,38 @@ class Game {
     public $strategy;
 
     function __construct($strategy) {
-        $this->board = array();
-        for ($i = 0; $i < $this->size; $i++) { # create 15x15 game board
-            array_push($this->board, array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0));
-        }
+        $this->board = array(
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
+            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+        );
         $this->strategy = $strategy;
-    }
-
-    function storeGame($pid, $game) {
-        $path = "../writable/games/$pid.txt"; # path where game metadata will be stored
-
-        $file = fopen($path, 'w') or die("Cannot open game file: " . $path);
-        fwrite($file, json_encode($game));
-        fclose($file);
     }
 
     function getGame($pid) {
         $path = "../writable/games/$pid.txt"; # path where game metadata will be stored
 
         $file = fopen($path, 'rb') or die("Cannot open game file: " . $path);
-        $contents = fread($file, filesize($file));
+        $contents = fread($file, filesize($path));
         fclose($file);
 
         $saved = json_decode($contents);
 
         $instance = new self($saved->strategy);
-        $instance->board = json_decode(json_decode($saved->board), true);
+        $instance->board = json_decode(json_encode($saved->board), true);
         return $instance; # return game
-    }
-
-    function makeMove($pid, $move) {
-        $game = Game::getGame($pid);
-        $acknowledgeMove = $game->completeMove(true, $move);
-
-        if ($acknowledgeMove->isWin || $acknowledgeMove->isDraw) {
-            toJson(Response::move($acknowledgeMove));
-        } else {
-
-        }
-
-        # save game again
-        storeGame($game);
     }
 
     function completeMove($player, $move) {

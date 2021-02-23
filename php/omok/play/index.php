@@ -1,6 +1,8 @@
 <?php
 
     include_once "../common/response.php";
+    include_once "../common/game.php";
+    include_once "../common/strategy.php";
 
     define("PID", "pid"); # constants
     define("MOVE", "move");
@@ -35,6 +37,34 @@
             toJson(Response::reason("Move not well-formed"));
             exit;
         }
+    }
+
+    makeMove($pid, $move_arr);
+    
+    function makeMove($pid, $move) {
+        $game = Game::getGame($pid);
+        $acknowledgeMove = $game->completeMove(true, $move);
+
+        if ($acknowledgeMove->isWin || $acknowledgeMove->isDraw) {
+            toJson(Response::move($acknowledgeMove));
+        } else {
+            if ($game->strategy === "Random") {
+                $move = RandomStrategy::getMove($game->board);
+            }
+            $currentMove = $game->completeMove(false, $move);
+            toJson(Response::moves($acknowledgeMove, $currentMove));
+        }
+
+        # save game again
+        storeGame($pid, $game);
+    }
+
+    function storeGame($pid, $game) {
+        $path = "../writable/games/$pid.txt"; # path where game metadata will be stored
+
+        $file = fopen($path, 'w') or die("Cannot open game file: " . $path);
+        fwrite($file, json_encode($game));
+        fclose($file);
     }
 
     # check if the values of the move tokens array are both numeric
