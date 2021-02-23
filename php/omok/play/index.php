@@ -50,8 +50,11 @@
         } else {
             if ($game->strategy === "Random") {
                 $move = RandomStrategy::getMove($game->board);
+            } else {
+                $move = SmartStrategy::getMove($acknowledgeMove, $move);
             }
-            $currentMove = $game->completeMove(false, $move);
+            
+            $current_move = $game->completeMove(false, $move);
             toJson(Response::moves($acknowledgeMove, $currentMove));
         }
 

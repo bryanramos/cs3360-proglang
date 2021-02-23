@@ -29,6 +29,14 @@ class Game {
         $this->strategy = $strategy;
     }
 
+    function storeGame($pid, $game) {
+        $path = "../writable/games/$pid.txt"; # path where game metadata will be stored
+
+        $file = fopen($path, 'w') or die("Cannot open game file: " . $path);
+        fwrite($file, json_encode($game));
+        fclose($file);
+    }
+
     function getGame($pid) {
         $path = "../writable/games/$pid.txt"; # path where game metadata will be stored
 
