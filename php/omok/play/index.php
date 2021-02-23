@@ -1,8 +1,8 @@
 <?php
 
     include_once "common.php";
-    include_once "response.php";
     include_once "game.php";
+    include_once "response.php";
     include_once "strategy.php";
 
     # constants

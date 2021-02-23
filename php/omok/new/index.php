@@ -1,8 +1,8 @@
 <?php
 
+    include_once "../play/common.php";
     include_once "../play/game.php";
     include_once "../play/response.php";
-    include_once "../play/common.php";
 
     define("STRATEGY", "strategy");
     $knownStrategies = ["Smart", "Random"];

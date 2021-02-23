@@ -1,6 +1,7 @@
 <?php
 
 class Move {
+    
     public $x;
     public $y;
     public $isWin;

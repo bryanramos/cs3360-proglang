@@ -1,5 +1,7 @@
 <?php
+
 class RandomStrategy {
+
 	static function getMove($board){
 
 		for(;;){
@@ -62,7 +64,7 @@ class SmartStrategy {
                 }
             }
         }
-		
+
 		return $tempValue;
 	}
 }
