@@ -19,6 +19,12 @@
             $instance->pid = $pid;
             return $instance;
         }
+
+        static function move($acknowledgeMove) {
+            $instance = new self(true);
+            $instance->acknowledgeMove = $acknowledgeMove;
+            return $instance;
+        }
     }
 
 ?>

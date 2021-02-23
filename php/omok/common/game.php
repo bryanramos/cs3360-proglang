@@ -1,5 +1,7 @@
 <?php
 
+include_once "move.php";
+
 class Game {
 
     public $board;
@@ -39,12 +41,31 @@ class Game {
     function makeMove($pid, $move) {
         $game = Game::getGame($pid);
         $acknowledgeMove = $game->completeMove(true, $move);
+
+        if ($acknowledgeMove->isWin || $acknowledgeMove->isDraw) {
+            toJson(Response::move($acknowledgeMove));
+        } else {
+
+        }
+
+        # save game again
+        storeGame($game);
     }
 
     function completeMove($player, $move) {
         $this->board[$move[0]][$move[1]] = ($player) ? 1 : 2; # check if player or computer
 
         $result = $this->checkForWinningMove($move);
+
+        # $x, $y, $isWin, $isDraw, $row
+
+        if ($result == 0) { # move was neither a win or draw
+            return new Move($move[0], $move[1], false, false, array());
+        } else if ($result == 2) { # move resulted in a draw
+            return new Move($move[0], $move[1], false, true, array());
+        } else { # move resulted in a win
+            return new Move($move[0], $move[1], true, false, $result);
+        }
     }
 
     function checkForWinningMove($move) {
@@ -109,8 +130,52 @@ class Game {
                 } else {
                     $count1 = 0;
                 }
+
+                if($this->board[14-$x+$i][14-$i] == $move){
+					$count2++;
+					$row[] = 14-$x+$i;
+					$row[] = 14-$i;
+					if($count2 == 5){
+						return $row;
+					}
+				} else {
+					$count2 = 0;
+				}
+
+                if($this->board[14-$x+$i][$i] == $move){
+					$count3++;
+					$row[] = 14-$x+$i;
+					$row[] = $i;
+					if($count3 == 5){
+						return $row;
+					}
+				} else {
+					$count3 = 0;
+				}
+
+                if($this->board[$i][14-$x+$i] == $move){
+					$count4++;
+					$row[] = 14-$x+$i;
+                    $row[] = $i;
+					if($count4 == 5){
+						return $row;
+					}
+				} else {
+					$count4 = 0;
+				}
             }
         }
+
+        # check for a draw, if its an open space, the loop stops
+        for ($i = 0; $i < $this->size; $i++) {
+            for ($j = 0; $j < $this->size; $j++) {
+                if ($this->board[$i][$j] === 0) {
+                    return 0;
+                }
+            }
+        }
+
+        return 2;
     }
 }
 

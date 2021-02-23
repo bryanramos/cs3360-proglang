@@ -37,20 +37,7 @@
         }
     }
 
-    function completeMove($player, $move) {
-        $this->board[$move[0]][$move[1]] = ($player) ? 1 : 2; # check if player or computer
-
-        $result = $this->checkForWinningMove($move);
-    }
-
-    function checkForWinningMove($move) {
-        $row = array();
-
-        $move = $this->board[$move[0]][$move[1]];
-        $startIndexHorizontal = ($move[0]<4) ? 0 : $move[0]-4;
-        $endIndexHorizontal = ($move[0]<10) ? 14 : $move[0]+4;
-    }
-
+    # check if the values of the move tokens array are both numeric
     function checkIfNumeric($array) {
         foreach($array as $value) {
             if (!is_numeric($value)) {
