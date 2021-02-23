@@ -20,15 +20,15 @@
             return $instance;
         }
 
-        static function move($acknowledgeMove) {
+        static function move($ackMove) {
             $instance = new self(true);
-            $instance->acknowledgeMove = $acknowledgeMove;
+            $instance->ack_move = $ackMove;
             return $instance;
         }
 
-        static function moves($acknowledgeMove, $move) {
+        static function moves($ackMove, $move) {
             $instance = new self(true);
-            $instance->acknowledgeMove = $acknowledgeMove;
+            $instance->ack_move = $ackMove;
             $instance->move = $move;
             return $instance;
         }

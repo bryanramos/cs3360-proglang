@@ -1,7 +1,8 @@
 <?php
 
-    include_once "../common/game.php";
-    include_once "../common/response.php";
+    include_once "../play/game.php";
+    include_once "../play/response.php";
+    include_once "../play/common.php";
 
     define("STRATEGY", "strategy");
     $knownStrategies = ["Smart", "Random"];
@@ -12,6 +13,7 @@
     } else {
         $strategy = $_GET[STRATEGY];
 
+        # strategy parameter value must match a known strategy
         if (in_array($strategy, $knownStrategies)) {
             newGame($strategy);
         } else { # strategy specified is not a known strategy
@@ -23,10 +25,11 @@
     function newGame($strategy) {
         $pid = uniqid();
         $game = new Game($strategy);
-        $game->storeGame($pid, $game);
+        storeGame($pid, $game);
         toJson(Response::pid($pid));
     }
 
-    function toJson($response) {
+    # encode to json
+    function toJson($response) { 
         echo json_encode($response);
     }
