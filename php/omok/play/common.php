@@ -5,7 +5,7 @@
         $path = "../writable/games/$pid.txt"; # path where game data will be stored
 
         $file = fopen($path, 'w') or die("Cannot open game file: " . $path);
-        fwrite($file, json_encode($game));
+        fwrite($file, json_encode($game)); # serialize
         fclose($file);
     }
     

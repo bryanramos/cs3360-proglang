@@ -6,7 +6,7 @@
 
 // set to the base address (URL) of your Omok web service
 //$home = "https://cssrvlab01.utep.edu/Classes/cs3360/<username>"
-$home = "http://bryan-ramos.com/omok";
+$home = "https://cssrvlab01.utep.edu/Classes/cs3360/bramos8/";
 //$home = "http://localhost:8000/";
 
 $strategies = array(); // strategies supported by the web service under test

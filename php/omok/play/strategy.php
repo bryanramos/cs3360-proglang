@@ -2,12 +2,15 @@
 
 class RandomStrategy {
 
-	static function pickSlot($board){
+	static function pickSlot($board) {
 
 		for(;;){
+
 			$move[0] = rand(0, 14);
 			$move[1] = rand(0, 14);
-			if(!$board[$move[0]][$move[1]]){
+
+			# if board slot if 0, its a valid slot to make a move
+			if (!$board[$move[0]][$move[1]]) {
 				return $move;
 			}
 		}
@@ -17,7 +20,7 @@ class RandomStrategy {
 
 class SmartStrategy {
 
-	static function pickSlot($bool, $board, $move){
+	static function pickSlot($bool, $board, $move) {
 		$playerMove = $board[$move[0]][$move[1]];
 		$startIndexHorizontal= ($move[0]<4)? 0 : $move[0]-4;
 		$endIndexHorizontal = ($move[0]>10)? 14 : $move[0]+4;
