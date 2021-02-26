@@ -1,6 +1,12 @@
 <?php
 
-    class RandomStrategy {
+    # Coded by Bryan Ramos
+
+    abstract class MoveStrategy {
+        abstract static function pickSlot($board);
+    }
+
+    class RandomStrategy extends MoveStrategy {
         static function pickSlot($board) {
 
             for(;;) {
