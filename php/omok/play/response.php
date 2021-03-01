@@ -1,5 +1,7 @@
 <?php
 
+    # Coded By Bryan Ramos
+
     # handle responses returned to the user by the Omok web service
     class Response {
         public $response;

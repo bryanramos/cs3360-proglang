@@ -1,13 +1,16 @@
 <?php
 
-    $size = 15;
-    $strategies = ["Smart", "Random"];
-    $gameInfo = new GameInfo($size, $strategies);
+    # Coded By Bryan Ramos
+
+    include_once "../play/common.php";
+    include_once "../play/game.php";
+
+    $gameInfo = new GameInfo(Game::$boardSize, Game::$knownStrategies);
 
     if (empty($_SERVER["REQUEST_METHOD"])) {
         json_encode("Uri not found");
     } else {
-        $gameInfo->toJson();
+        toJson($gameInfo);
     }
 
     class GameInfo {
@@ -17,9 +20,5 @@
         public function __construct($size, $strategies) {
             $this->size = $size;
             $this->strategies = $strategies;
-        }
-
-        public function toJson() { # convert object to json
-            echo json_encode($this);
         }
     }

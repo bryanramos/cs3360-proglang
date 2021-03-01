@@ -1,5 +1,7 @@
 <?php
 
+    # Coded By Bryan Ramos
+
     include_once "common.php";
     include_once "game.php";
     include_once "response.php";
@@ -41,12 +43,12 @@
             exit;
         }
         # check for invalid x coordinate
-        if ($move_arr[0] < 0 || $move_arr[0] >= 15) {
+        if ($move_arr[0] < 0 || $move_arr[0] >= Game::$boardSize) {
             toJson(Response::reason("Invalid x coordinate, " . $move_arr[0]));
             exit;
         }
         # check for invalid y coordinate
-        if ($move_arr[1] < 0 || $move_arr[1] >= 15) {
+        if ($move_arr[1] < 0 || $move_arr[1] >= Game::$boardSize) {
             toJson(Response::reason("Invalid y coordinate, " . $move_arr[1]));
             exit;
         }
@@ -57,9 +59,14 @@
     function makeMove($pid, $move) {
         $game = Game::getGame($pid);
 
+        if (Game::isFull($game->board)) {
+            toJson(Response::reason("Board is full"));
+            exit;
+        }
+
         # check if the slot is non-empty
         # if its already filled, return a false response
-        if ($game->board[$move[0]][$move[1]] != 0) {
+        if (!empty($game->board[$move[0]][$move[1]])) {
             toJson(Response::reason("Already placed"));
             exit;
         }
@@ -70,11 +77,18 @@
             toJson(Response::move($acknowledgeMove));
         } else {
 
-            if ($game->strategy === "Random") {
-                $move = RandomStrategy::pickSlot($game->board);
-            } else {
-                $move = SmartStrategy::pickSlot(false, $game->board, $move);
+            for (;;) {
+                if ($game->strategy === "Random") {
+                    $move = RandomStrategy::pickSlot($game->board);
+                } else {
+                    $move = SmartStrategy::pickSlot(false, $game->board, $move);
+                }
+    
+                if (empty($game->board[$move[0]][$move[1]])) {
+                    break;
+                }
             }
+            
 
             $current_move = $game->completeMove(false, $move);
             toJson(Response::moves($acknowledgeMove, $current_move));
@@ -92,11 +106,6 @@
             } 
         }
         return true;
-    }
-
-    # encode to json
-    function toJson($response) {
-        echo json_encode($response);
     }
 
 ?>

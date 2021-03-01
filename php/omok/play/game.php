@@ -1,49 +1,64 @@
 <?php
 
+# Coded By Bryan Ramos
+
 include_once "move.php";
 
 class Game {
 
     public $board;
     public $strategy;
+	public static $boardSize = 15;
+	public static $initialPlaceValue = 0;
+	public static $player = 1;
+	public static $computer = 2;
+	public static $knownStrategies = ["Random", "Smart"];
+	public static $winningCount = 5;
 
     function __construct($strategy) {
-        $this->board = array(
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
-            array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-        );
+        $this->board = $this->createBoard(Game::$boardSize, Game::$initialPlaceValue);
         $this->strategy = $strategy;
     }
 
-    static function getGame($pid) {
-        $path = "../writable/games/$pid.txt"; # path where game data will be retrieved from
+	function createBoard($size, $initialPlaceValue) {
+		$generatedBoard = array();
+		for ($i = 0; $i < $size; $i++) {
+			array_push($generatedBoard, array_fill(0, $size, $initialPlaceValue)); 
+		}
+		return $generatedBoard;
+	}
 
-        $file = fopen($path, 'rb') or die("Cannot open game file: " . $path);
-        $contents = fread($file, filesize($path));
+	static function isFull($board) {
+		$isFull = true;
+	
+		for ($x = 0; $x < Game::$boardSize; $x++) {
+			for ($y = 0; $y < Game::$boardSize; $y++) {
+				if (empty($board[$x][$y])) {
+					$isFull = false;
+				}
+			}
+		}
+		
+		return $isFull;
+	}
+
+	# return stored game that has been deserialized
+    static function getGame($pid) {
+        $gamePath = "../writable/games/$pid.txt"; 
+
+        $file = fopen($gamePath, 'rb') or die("Cannot open game file: " . $gamePath);
+        $contents = fread($file, filesize($gamePath));
         fclose($file);
 
-        $saved = json_decode($contents); # deserialize
+        $game = json_decode($contents); # deserialize
 
-        $instance = new self($saved->strategy);
-        $instance->board = json_decode(json_encode($saved->board), true);
-        return $instance; # return stored game that has been deserialized
+        $instance = new self($game->strategy);
+        $instance->board = json_decode(json_encode($game->board), true);
+        return $instance;
     }
 
     function completeMove($player, $move) {
-        $this->board[$move[0]][$move[1]] = ($player) ? 1 : 2; # check if player or computer
+        $this->board[$move[0]][$move[1]] = ($player) ? Game::$player : Game::$computer; # check if player or computer
 
         $result = $this->checkForWinningMove($move);
 
@@ -62,9 +77,9 @@ class Game {
 
 		$myMove = $this->board[$move[0]][$move[1]];
 		$startIndexHorizontal = ($move[0]<4)? 0 : $move[0]-4;
-		$endIndexHorizontal = ($move[0]>10)? 14 : $move[0]+4;
+		$endIndexHorizontal = ($move[0]>10)? (Game::$boardSize - 1) : $move[0]+4;
 		$startIndexVertical = ($move[1]<4)? 0 : $move[1]-4;
-		$endIndexVertical = ($move[1]>10)? 14 : $move[1]+4;
+		$endIndexVertical = ($move[1]>10)? (Game::$boardSize - 1) : $move[1]+4;
 		$countHorizontal = $countVertical = 0;
 		$count1 = $count2 = $count3 = $count4 = 0;
 		
@@ -74,7 +89,7 @@ class Game {
 				$countHorizontal++;
 				$row[] = $i;
 				$row[] = $move[1];
-				if ($countHorizontal == 5) {
+				if ($countHorizontal == Game::$winningCount) {
 					return $row;
 				}
 			} else {
@@ -89,7 +104,7 @@ class Game {
 				$countVertical++;
 				$row[] = $move[0];
 				$row[] = $i;
-				if ($countVertical == 5) {
+				if ($countVertical == Game::$winningCount) {
 					return $row;
 				}
 			} else {
@@ -99,44 +114,44 @@ class Game {
 		
 		$row = array();
 		# check for winning move in either diagonal direction
-		for ($x = 4; $x < 15; $x++) {
+		for ($x = 4; $x < Game::$boardSize; $x++) {
 			for ($i = 0; $i <= $x; $i++) {
 				if ($this->board[$x-$i][$i] == $myMove) {
 					$count1++;
 					$row[] = $x-$i;
 					$row[] = $i;
-					if($count1 == 5){
+					if($count1 == Game::$winningCount){
 						return $row;
 					}
 				} else {
 					$count1 = 0;
 				}
-				if ($this->board[14-$x+$i][14-$i] == $myMove) {
+				if ($this->board[(Game::$boardSize - 1)-$x+$i][(Game::$boardSize - 1)-$i] == $myMove) {
 					$count2++;
-					$row[] = 14-$x+$i;
-					$row[] = 14-$i;
-					if($count2 == 5){
+					$row[] = (Game::$boardSize - 1)-$x+$i;
+					$row[] = (Game::$boardSize - 1)-$i;
+					if($count2 == Game::$winningCount){
 						return $row;
 					}
 				} else {
 					$count2 = 0;
 				}
 				
-				if ($this->board[14-$x+$i][$i] == $myMove) {
+				if ($this->board[(Game::$boardSize - 1)-$x+$i][$i] == $myMove) {
 					$count3++;
-					$row[] = 14-$x+$i;
+					$row[] = (Game::$boardSize - 1)-$x+$i;
 					$row[] = $i;
-					if($count3 == 5){
+					if($count3 == Game::$winningCount){
 						return $row;
 					}
 				} else {
 					$count3 = 0;
 				}
-				if ($this->board[$i][14-$x+$i] == $myMove) {
+				if ($this->board[$i][(Game::$boardSize - 1)-$x+$i] == $myMove) {
 					$count4++;
 					$row[] = $i;
-					$row[] = 14-$x+$i;
-					if ($count4 == 5) {
+					$row[] = (Game::$boardSize - 1)-$x+$i;
+					if ($count4 == Game::$winningCount) {
 						return $row;
 					}
 				} else {
@@ -148,8 +163,8 @@ class Game {
 		# check for a draw 
 		# if there is a space that has not been placed (filled) by the player
 		# or the computer, then the loop will break
-		for ($i = 0; $i < 15; $i++) {
-			for($j = 0; $j < 15; $j++){
+		for ($i = 0; $i < Game::$boardSize; $i++) {
+			for($j = 0; $j < Game::$boardSize; $j++){
 				if ($this->board[$i][$j] === 0) {
 					return 0;
 				}

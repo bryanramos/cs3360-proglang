@@ -1,16 +1,25 @@
 <?php
 
+# Coded By Bryan Ramos
+
+include_once "game.php";
+
 class RandomStrategy {
 
 	static function pickSlot($board) {
 
+		if (Game::isFull($board)) {
+            toJson(Response::reason("Board is full"));
+            exit;
+        }
+
 		for(;;){
 
-			$move[0] = rand(0, 14);
-			$move[1] = rand(0, 14);
+			$move[0] = rand(0, Game::$boardSize-1);
+			$move[1] = rand(0, Game::$boardSize-1);
 
 			# if board slot if 0, its a valid slot to make a move
-			if (!$board[$move[0]][$move[1]]) {
+			if (empty($board[$move[0]][$move[1]])) {
 				return $move;
 			}
 		}
@@ -21,11 +30,17 @@ class RandomStrategy {
 class SmartStrategy {
 
 	static function pickSlot($bool, $board, $move) {
+
+		if (Game::isFull($board)) {
+            toJson(Response::reason("Board is full"));
+            exit;
+        }
+
 		$playerMove = $board[$move[0]][$move[1]];
 		$startIndexHorizontal= ($move[0]<4)? 0 : $move[0]-4;
-		$endIndexHorizontal = ($move[0]>10)? 14 : $move[0]+4;
+		$endIndexHorizontal = ($move[0]>10)? (Game::$boardSize - 1) : $move[0]+4;
 		$startIndexVertical = ($move[1]<4)? 0 : $move[1]-4;
-		$endIndexVertical = ($move[1]>10)? 14 : $move[1]+4;
+		$endIndexVertical = ($move[1]>10)? (Game::$boardSize - 1) : $move[1]+4;
 		$countHorizontal = $countVertical = 0;
 		$temp = 0;
 		$tempValue = array(0,0);	
